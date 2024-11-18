@@ -1,5 +1,6 @@
 .idea
 venv
+errorlog.txt
 settings.py
 test.py
 __pycache__
