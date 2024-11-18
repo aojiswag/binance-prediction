@@ -1,6 +1,5 @@
 .idea
 venv
-tradelog/
 settings.py
 test.py
 __pycache__
