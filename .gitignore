@@ -1,0 +1,8 @@
+.idea
+venv
+tradelog/
+settings.py
+test.py
+__pycache__
+*.csv
+catboost_info
