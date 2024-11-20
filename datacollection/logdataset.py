@@ -1,3 +1,4 @@
+
 class CorrelDataSet:
     def __init__(self, **data):
         self.now_time = data.get("nowTime", 0)
@@ -134,10 +135,16 @@ class DiffDataSet:
         self.ssd_change = data.get("ssdChange", 0)
         self.prev_day_ssd_avg_per = data.get("prevDaySsdAvgPer", 0)
 
-
     def __iter__(self):
         for _, val in self.__dict__.items():
             yield val
 
     def get_log_header(self):
         return [x for x, _ in self.__dict__.items()]
+
+
+class YMode:
+    DIF = "DIF"
+    BUY_LIMIT = "BUY_LIMIT"
+    SELL_LIMIT = "SELL_LIMIT"
+    BIN_LIMIT = "BIN_LIMIT"

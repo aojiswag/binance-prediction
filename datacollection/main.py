@@ -46,8 +46,8 @@ def main():
     candle_update_delay_offset_sec = 8
     top_volume_ticker_length = 100
 
-    price_window_size = 60
-    day_init_window_size = 60
+    price_window_size = 360
+    day_init_window_size = 360
 
     delist_filter_ms = 360000
 
@@ -56,7 +56,7 @@ def main():
     log_header = (logdataset.DiffDataSet().get_log_header())
 
     bh.write_log(reg_log_path, log_header)
-
+    print(log_header)
     now_unix_time = round(time.time() * 1000)
 
     futures_symbol_volume = [[x["symbol"], float(x["quoteVolume"])]
@@ -67,9 +67,10 @@ def main():
     top_volume_symbol = [x[0] for x in futures_symbol_volume_sort]
     print(top_volume_symbol)
 
+    delist_list = []
+
     data = []
     reg_data_window = {}
-
     sec_trigger_flag = False
 
     buy_limit = 1.05
@@ -108,11 +109,38 @@ def main():
         now_unix_time = round(time.time() * 1000)
         delist_symbol = [x["symbol"] for x in futures_ticker if now_unix_time - x["closeTime"] > delist_filter_ms]
         for i in delist_symbol:
-            if i in top_volume_symbol:
-                top_volume_symbol.remove(i)
+            if i not in delist_list:
+                delist_list.append(i)
+
         top_volume_ticker = [x for x in candle if x["symbol"] in top_volume_symbol]
 
         for ticker in top_volume_ticker:
+            if ticker["symbol"] in delist_symbol:
+                now_time = time.strftime("%y-%m-%d %H:%M:%S")
+                logging_data = logdataset.DiffDataSet(
+                    nowTime=now_time,
+                    symbol=ticker["symbol"],
+                    lastPrice=np.nan,
+                    baseAssetVolume=np.nan,
+                    prevDayMaVolPerVol=np.nan,
+                    volumeChange=np.nan,
+                    buyVolumeRatio=np.nan,
+                    buyVolumeRatioChange=np.nan,
+                    maScore=np.nan,
+                    rsiChange=np.nan,
+                    prevDayRsiAvgPer=np.nan,
+                    macdChange=np.nan,
+                    prevDayMacdAvgPer=np.nan,
+                    macdHistChange=np.nan,
+                    prevDayMacdHistAvgPer=np.nan,
+                    mfiChange=np.nan,
+                    prevDayMfiAvgPer=np.nan,
+                    ssdChange=np.nan,
+                    prevDaySsdAvgPer=np.nan
+                )
+                bh.write_log(reg_log_path, logging_data)
+                continue
+
             symbol = ticker["symbol"]
             base_asset_volume = float(ticker["baseAssetVolume"])
             taker_buy_base_asset_volume = float(ticker["takerBuyBaseAssetVolume"])
@@ -300,8 +328,28 @@ def main():
                 ssd_change = 0
                 prev_day_ssd_avg_per = 0
 
+            ticker_dict = {
+                "symbol": symbol,
+                "baseAssetVolume": base_asset_volume,
+                "maVolWindow": ma_vol_window,
+                "buyVolumeRatio": buy_volume_ratio,
+                "lastPrice": last_price,
+                "candleWindow": candle_window,
+                "priceWindow": price_window,
+                "rsi": rsi,
+                "rsiWindow": rsi_window,
+                "macd": macd,
+                "macdWindow": macd_window,
+                "macdHist": macd_hist,
+                "macdHistWindow": macd_hist_window,
+                "mfi": mfi,
+                "mfiWindow": mfi_window,
+                "ssd": ssd,
+                "ssdWindow": ssd_window,
+            }
+            data.append(ticker_dict)
             now_time = time.strftime("%y-%m-%d %H:%M:%S")
-            # 
+            #
             logging_data = logdataset.DiffDataSet(
                 nowTime=now_time,
                 symbol=symbol,
@@ -326,27 +374,6 @@ def main():
             )
             if logging_data.prev_day_macd_avg_per != 0 and not np.isnan(logging_data.prev_day_macd_avg_per):
                 bh.write_log(reg_log_path, logging_data)
-
-            ticker_dict = {
-                "symbol": symbol,
-                "baseAssetVolume": base_asset_volume,
-                "maVolWindow": ma_vol_window,
-                "buyVolumeRatio": buy_volume_ratio,
-                "lastPrice": last_price,
-                "candleWindow": candle_window,
-                "priceWindow": price_window,
-                "rsi": rsi,
-                "rsiWindow": rsi_window,
-                "macd": macd,
-                "macdWindow": macd_window,
-                "macdHist": macd_hist,
-                "macdHistWindow": macd_hist_window,
-                "mfi": mfi,
-                "mfiWindow": mfi_window,
-                "ssd": ssd,
-                "ssdWindow": ssd_window,
-            }
-            data.append(ticker_dict)
 
         now_time = time.strftime("%y-%m-%d %H:%M:%S")
         print("in sleep: " + now_time)
