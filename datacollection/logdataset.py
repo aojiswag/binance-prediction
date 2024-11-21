@@ -105,6 +105,7 @@ class RegDataSet:
     def get_log_header(self):
         return [x for x, _ in self.__dict__.items()]
 
+
 class DiffDataSet:
     def __init__(self, **data):
         self.now_time = data.get("nowTime", 0)

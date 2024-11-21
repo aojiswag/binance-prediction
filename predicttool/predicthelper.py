@@ -4,14 +4,15 @@ from datacollection.logdataset import YMode
 
 
 def build_seq_dataset(data: pd.DataFrame,
-                      x_size: int = 2,
-                      offset: int = 5,
+                      x_size: int = 1,
+                      offset: int = 0,
                       param_index: int = 18,
                       sym_n: int = 100,
                       y_mode: YMode = YMode.DIF,
                       buy_limit_criteria: float = 1.03,
                       sell_limit_criteria: float = 0.97,
                       bin_criteria: float = 1):
+
     x_data = data.iloc[:, 0:param_index].values
 
     x_index = [
@@ -19,14 +20,12 @@ def build_seq_dataset(data: pd.DataFrame,
     ]
 
     x_seq = [x_data[x] for x in x_index]
-    print(x_seq)
     seq_df = pd.DataFrame({"x": x_seq})
 
     def df_shift_price(df):
         if pd.isna(df.iloc[1]):
             return np.nan
 
-        print(df.iloc[1], df.iloc[0][-1])
         dif = df.iloc[1] / df.iloc[0][-1]
         if y_mode == YMode.DIF:
             return dif
@@ -48,7 +47,15 @@ def build_seq_dataset(data: pd.DataFrame,
     if y_mode == YMode.BIN_LIMIT or y_mode == YMode.BUY_LIMIT or y_mode == YMode.SELL_LIMIT:
         seq_df = seq_df.astype({y_mode: int})
 
+    seq_df.to_csv("test.csv")
+
     return seq_df
 
 
-build_seq_dataset(pd.read_csv("originaldata/tradeLog241118140145.csv"))
+def split_train_dataset(dataset: pd.DataFrame):
+    pass
+
+
+seq_dataset = build_seq_dataset(pd.read_csv("originaldata/tradeLog241118140145.csv"))
+
+split_seq_dataset = split_train_dataset(seq_dataset)
