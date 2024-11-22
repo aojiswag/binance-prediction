@@ -111,28 +111,20 @@ class DiffDataSet:
         self.now_time = data.get("nowTime", 0)
         self.symbol = data.get("symbol", 0)
         self.last_price = data.get("lastPrice", 0)
-
         self.base_asset_volume = data.get("baseAssetVolume", 0)
         self.prev_day_ma_vol_per_vol = data.get("prevDayMaVolPerVol", 0)
-
         self.volume_change = data.get("volumeChange", 0)
         self.buy_volume_ratio = data.get("buyVolumeRatio", 0)
         self.buy_volume_ratio_change = data.get("buyVolumeRatioChange", 0)
-
         self.ma_score = data.get("maScore", 0)
-
         self.rsi_change = data.get("rsiChange", 0)
         self.prev_day_rsi_avg_per = data.get("prevDayRsiAvgPer", 0)
-
         self.macd_change = data.get("macdChange", 0)
         self.prev_day_macd_avg_per = data.get("prevDayMacdAvgPer", 0)
-
         self.macd_hist_change = data.get("macdHistChange", 0)
         self.prev_day_macd_hist_avg_per = data.get("prevDayMacdHistAvgPer", 0)
-
         self.mfi_change = data.get("mfiChange", 0)
         self.prev_day_mfi_avg_per = data.get("prevDayMfiAvgPer", 0)
-
         self.ssd_change = data.get("ssdChange", 0)
         self.prev_day_ssd_avg_per = data.get("prevDaySsdAvgPer", 0)
 

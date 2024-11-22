@@ -6,6 +6,7 @@ from sklearn.metrics import r2_score
 from pycaret.regression import *
 
 
+
 data = pd.read_csv("BTCUSDTregmodel.csv_timeshift.csv", delimiter=",")
 data = data.iloc[:, 3:34]
 #print(data)
