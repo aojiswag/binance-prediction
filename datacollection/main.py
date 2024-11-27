@@ -68,14 +68,8 @@ def main():
     print(top_volume_symbol)
 
     delist_list = []
-
     data = []
-    reg_data_window = {}
     sec_trigger_flag = False
-
-    buy_limit = 1.05
-    sell_limit = 0.95
-    bin_limit = 1
 
     period_rsi = 12
     period_macd_fast = 12
@@ -174,7 +168,6 @@ def main():
 
             # MA Score, MA Over
             ma_score = 0
-            ma_over_list = [0 for _ in range(len(ma_score_target))]
             if max(ma_score_target) < len(price_window):
                 ma_over_list = []
                 for i in ma_score_target:
@@ -349,7 +342,7 @@ def main():
             }
             data.append(ticker_dict)
             now_time = time.strftime("%y-%m-%d %H:%M:%S")
-            #
+
             logging_data = logdataset.DiffDataSet(
                 nowTime=now_time,
                 symbol=symbol,
@@ -360,7 +353,6 @@ def main():
                 buyVolumeRatio=buy_volume_ratio,
                 buyVolumeRatioChange=buy_volume_ratio_change,
                 maScore=ma_score,
-                # ma_over_list 변경 시 RegDataSet ma_over_x 반영 필요
                 rsiChange=rsi_change,
                 prevDayRsiAvgPer=prev_day_rsi_avg_per,
                 macdChange=macd_change,

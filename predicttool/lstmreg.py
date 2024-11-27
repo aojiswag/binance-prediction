@@ -10,7 +10,6 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 import time
-from tensorflow.python.client import device_lib
 
 import tensorflow as tf
 
