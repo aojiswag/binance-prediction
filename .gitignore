@@ -6,3 +6,5 @@ test.py
 __pycache__
 *.csv
 catboost_info
+*.h5
+*.keras
