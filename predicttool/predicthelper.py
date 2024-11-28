@@ -59,13 +59,13 @@ def build_seq_dataset(data: pd.DataFrame,
     return out_seq
 
 
-def split_train_dataset(data: list, train_ratio: float = 0.9, random_sample: bool = False):
+def split_train_dataset(data: list, test_split: float = 0.2, random_sample: bool = False):
     dataset_size = len(data[0])
     pl.log("split_dataset")
     pl.log("random sample= " + str(random_sample))
 
     if random_sample:
-        sample = random.sample(range(0, dataset_size), int(dataset_size * (1 - train_ratio)))
+        sample = random.sample(range(0, dataset_size), int(dataset_size * test_split))
 
         train_x = np.delete(data[0], sample, axis=0)
         train_y = np.delete(data[1], sample, axis=0)
@@ -77,7 +77,7 @@ def split_train_dataset(data: list, train_ratio: float = 0.9, random_sample: boo
 
         return train_x, train_y, test_x, test_y
 
-    train_index = int(dataset_size*train_ratio)
+    train_index = int(dataset_size*(1-test_split))
 
     train_x = data[0][0:train_index]
     train_y = data[1][0:train_index]

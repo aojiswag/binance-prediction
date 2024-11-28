@@ -28,8 +28,8 @@ print(test_y.shape)
 
 # 2. 모델 설계
 model = Sequential([
-    LSTM(32, input_shape=(5, 13), kernel_regularizer=l2(0.001), return_sequences=False),  # Many-to-One 설정
-    Dense(16, activation='relu', kernel_regularizer=l2(0.001)),
+    LSTM(32, input_shape=(5, 13), return_sequences=False),  # Many-to-One 설정
+    Dense(16, activation='relu'),
     Dense(1, activation='sigmoid')
 ])
 
