@@ -17,9 +17,15 @@ print(tf.config.list_physical_devices('GPU'))
 now_time = time.strftime("%y%m%d%H%M%S")
 datafile = pd.read_csv("originaldata/tradeLog241121000802.csv")
 
-data = build_seq_dataset(datafile, ignore_col=[6, 7], y_mode=YMode.DIF, x_size=60, offset=10)
+data = build_seq_dataset(datafile,
+                         ignore_col=[6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                         y_mode=YMode.DIF,
+                         x_size=5,
+                         offset=5)
 
 train_x, train_y, test_x, test_y = split_train_dataset(data=data, random_sample=False)
+
+print(train_x)
 
 print(train_x.shape)
 print(train_y.shape)
@@ -29,8 +35,8 @@ print(test_y.shape)
 
 
 model = Sequential([
-    LSTM(128, input_shape=(60, 13), return_sequences=False),  # Many-to-One 설정
-    Dense(64, activation='relu'),
+    LSTM(64, input_shape=(5, 3), return_sequences=False),  # Many-to-One 설정
+    Dense(32, activation='relu'),
     Dense(1)
 ])
 

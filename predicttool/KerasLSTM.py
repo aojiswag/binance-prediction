@@ -13,6 +13,13 @@ import time
 
 import tensorflow as tf
 
+
+def r_squared(y_true, y_pred):
+    ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+    ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+    return 1 - ss_res / (ss_tot + tf.keras.backend.epsilon())
+
+
 class KerasLSTM:
     def __init__(self,
                  seq_dataset: list,
@@ -52,15 +59,9 @@ class KerasLSTM:
                 Dense(dense_unit, activation=activation),
                 Dense(1)
             ])
-
-            def r_squared(y_true, y_pred):
-                ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
-                ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
-                return 1 - ss_res / (ss_tot + tf.keras.backend.epsilon())
             self.model.compile(optimizer=Adam(learning_rate=learning_rate), loss='mse', metrics=['mae', r_squared])
 
         self.model.summary()
-
 
     def fit(self,
             val_split: float = 0.2,
@@ -90,27 +91,29 @@ class KerasLSTM:
         )
 
         if checkpoint:
-            self.model = load_model(self.checkpoint_path)
+            self.model = load_model(self.checkpoint_path, custom_objects={"r_squared": r_squared})
 
-    def prediction(self, plot_loss_history: bool = True):
+    def evaluate(self, plot_loss_history: bool = True):
 
         predictions = self.model.predict(self.test_x)
+
         evaluate = self.model.evaluate(self.test_x, self.test_y)
 
         if self.classification:
+            predictions = [1 if x > 0.5 else 0 for x in predictions.flatten()]
             result = pd.DataFrame({
                 "real": self.test_y.flatten(),
-                "pred": 1 if predictions.flatten() > 0.5 else 0,
-                "loss": evaluate[0],
-                "accuracy": evaluate[1]
+                "pred": predictions,
+                f"loss: {evaluate[0]}": None,
+                f"accuracy: {evaluate[1]}": None,
             })
         else:
             result = pd.DataFrame({
                 "real": self.test_y.flatten(),
                 "pred": predictions.flatten(),
-                "loss": evaluate[0],
-                "mae": evaluate[1],
-                "r_sq": evaluate[2]
+                f"loss: {evaluate[0]}": None,
+                f"mae: {evaluate[1]}": None,
+                f"r_sq: {evaluate[2]}": None,
             })
 
         result.to_csv(self.result_path)
