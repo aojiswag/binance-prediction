@@ -4,7 +4,7 @@ import pandas as pd
 from datacollection.logdataset import YMode
 
 """
-No git change tracking1212
+No git change tracking
 """
 
 filepath = "originaldata/tradeLog241121000802.csv"
