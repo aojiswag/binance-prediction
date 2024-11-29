@@ -3,6 +3,10 @@ from predicttool.predicthelper import build_seq_dataset
 import pandas as pd
 from datacollection.logdataset import YMode
 
+"""
+No git change tracking
+"""
+
 filepath = "originaldata/tradeLog241121000802.csv"
 
 seq_dataset = build_seq_dataset(
