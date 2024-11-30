@@ -1,14 +1,10 @@
-import numpy as np
-
 from xgboost import XGBRegressor
-from xgboost import XGBClassifier
 from xgboost import plot_importance
-from matplotlib import pyplot
 import pandas as pd
 
 import cupy
-from predicttool.predicthelper import build_seq_dataset
-from predicttool.predicthelper import split_train_dataset
+from predicttool.tools.predicthelper import build_seq_dataset
+from predicttool.tools.predicthelper import split_train_dataset
 from datacollection.logdataset import YMode
 
 
