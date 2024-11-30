@@ -14,7 +14,8 @@ def build_seq_dataset(data: pd.DataFrame,
                       y_mode: YMode = YMode.DIF,
                       buy_limit_criteria: float = 1.03,
                       sell_limit_criteria: float = 0.97,
-                      bin_criteria: float = 1):
+                      bin_criteria: float = 1,
+                      return_labels = False):
     """
     No support Many-To-Many model.
 
@@ -55,6 +56,10 @@ def build_seq_dataset(data: pd.DataFrame,
 
     pl.log("x_data_shape" + str(out_seq[0].shape))
     pl.log("y_data_shape" + str(out_seq[1].shape))
+
+    if return_labels:
+        labels = data.columns[ignored_col]
+        return out_seq, labels
 
     return out_seq
 
