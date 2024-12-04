@@ -28,7 +28,7 @@ class XGBBuilder:
         self.classification = classification
 
         train_x, train_y, test_x, test_y = \
-            split_train_dataset(dataset, test_split, random_sample)
+            split_train_dataset(dataset, test_split)
 
         self.train_x = train_x.reshape(train_x.shape[0], train_x.shape[2])
         self.train_y = train_y.reshape(train_y.shape[0])
@@ -72,15 +72,12 @@ class XGBBuilder:
             )
         else:
             def r2_score_metric(preds, dtrain):
-                # 실제값
                 labels = dtrain.get_label()
 
-                # R² 계산
-                ss_res = np.sum((labels - preds) ** 2)  # Residual Sum of Squares
-                ss_tot = np.sum((labels - np.mean(labels)) ** 2)  # Total Sum of Squares
+                ss_res = np.sum((labels - preds) ** 2)
+                ss_tot = np.sum((labels - np.mean(labels)) ** 2)
                 r2 = 1 - (ss_res / ss_tot)
 
-                # 반환값은 (지표 이름, 계산된 값)
                 return 'r2', r2
 
             param["objective"] = 'reg:squarederror'
