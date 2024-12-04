@@ -16,7 +16,9 @@ import traceback
 
 
 @bh.retry(count=30, sleep_sec=1,
-          exceptions=(ConnectionResetError, urllib3.exceptions.ProtocolError, requests.exceptions.ConnectionError, Exception))
+          exceptions=(
+                  ConnectionResetError, urllib3.exceptions.ProtocolError, requests.exceptions.ConnectionError,
+                  Exception))
 def get_ticker(api: settings.ApiInfo):
     client = Client(api_key=api.key, api_secret=api.secret)
     tkr = client.futures_ticker()
@@ -26,7 +28,9 @@ def get_ticker(api: settings.ApiInfo):
 
 
 @bh.retry(count=30, sleep_sec=1,
-          exceptions=(ConnectionResetError, urllib3.exceptions.ProtocolError, requests.exceptions.ConnectionError, Exception))
+          exceptions=(
+                  ConnectionResetError, urllib3.exceptions.ProtocolError, requests.exceptions.ConnectionError,
+                  Exception))
 def get_candle(api: settings.ApiInfo, symbols: iter):
     client = Client(api_key=api.key, api_secret=api.secret)
     candles = bh.get_last_1m_candle(cl=client, symbols=symbols)
@@ -38,48 +42,38 @@ def get_candle(api: settings.ApiInfo, symbols: iter):
 error_log_path = "./tradelog/errorlog.txt"
 
 
-def main():
-    authkey = settings.ApiInfo()
+def main(candle_update_delay_offset_sec=8,
+         top_volume_ticker_length=100,
+         price_window_size=360,
+         day_init_window_size=360,
+         delist_filter_ms=360000,
+         period_rsi=12,
+         period_macd_fast=12,
+         period_macd_slow=26,
+         period_macd_sig=9,
+         period_mfi=21,
+         period_stoch_rsi_fast=14,
+         period_stoch_rsi_slow=3,
+         ma_score_target=(5, 10, 15, 20, 30, 45, 60),
+         ma_vol_window_size=7):
 
+    authkey = settings.ApiInfo()
     futures_ticker = get_ticker(authkey)
 
-    candle_update_delay_offset_sec = 8
-    top_volume_ticker_length = 100
-
-    price_window_size = 360
-    day_init_window_size = 360
-
-    delist_filter_ms = 360000
-
     reg_log_path = "./tradelog/tradeLog{0}.csv".format(time.strftime("%y%m%d%H%M%S"))
-
     log_header = (logdataset.DiffDataSet().get_log_header())
-
     bh.write_log(reg_log_path, log_header)
-    print(log_header)
     now_unix_time = round(time.time() * 1000)
-
     futures_symbol_volume = [[x["symbol"], float(x["quoteVolume"])]
                              for x in futures_ticker
                              if x["symbol"][-4:] == "USDT" and now_unix_time - x["closeTime"] < delist_filter_ms]
-
-    futures_symbol_volume_sort = sorted(futures_symbol_volume, key=lambda x: x[1], reverse=True)[0:top_volume_ticker_length]
+    futures_symbol_volume_sort = sorted(futures_symbol_volume, key=lambda x: x[1], reverse=True)[
+                                 0:top_volume_ticker_length]
     top_volume_symbol = [x[0] for x in futures_symbol_volume_sort]
-    print(top_volume_symbol)
 
     delist_list = []
     data = []
     sec_trigger_flag = False
-
-    period_rsi = 12
-    period_macd_fast = 12
-    period_macd_slow = 26
-    period_macd_sig = 9
-    period_mfi = 21
-    period_stoch_rsi_fast = 14
-    period_stoch_rsi_slow = 3
-    ma_score_target = (5, 10, 15, 20, 30, 45, 60)
-    ma_vol_window_size = 7
 
     while True:
         # 60sec candle update timer
@@ -180,7 +174,8 @@ def main():
             volume_change = base_asset_volume / prev_base_asset_volume if prev_base_asset_volume else 0
 
             # MA volume, Prev day MA volume per
-            ma_vol_window = deque(bh.get_value_by_key_in_symbol(prev_data, "maVolWindow", symbol) or [], maxlen=day_init_window_size)
+            ma_vol_window = deque(bh.get_value_by_key_in_symbol(prev_data, "maVolWindow", symbol) or [],
+                                  maxlen=day_init_window_size)
             ma_vol_window.append(base_asset_volume)
 
             ma_vol = sum(list(ma_vol_window)[-ma_vol_window_size:]) / ma_vol_window_size if \
@@ -375,7 +370,22 @@ if __name__ == "__main__":
     try:
         t = time.strftime("%y-%m-%d %H:%M:%S")
         bh.write_log(error_log_path, ("A: ", t, "start program"))
-        main()
+
+        main(candle_update_delay_offset_sec=8,
+             top_volume_ticker_length=100,
+             price_window_size=360,
+             day_init_window_size=360,
+             delist_filter_ms=360000,
+             period_rsi=12,
+             period_macd_fast=12,
+             period_macd_slow=26,
+             period_macd_sig=9,
+             period_mfi=21,
+             period_stoch_rsi_fast=14,
+             period_stoch_rsi_slow=3,
+             ma_score_target=(5, 10, 15, 20, 30, 45, 60),
+             ma_vol_window_size=7)
+
     except Exception as e:
         t = time.strftime("%y-%m-%d %H:%M:%S")
         bh.write_log(error_log_path, ("E: ", t, e, traceback.format_exc()))
