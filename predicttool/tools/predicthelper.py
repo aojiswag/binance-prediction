@@ -11,11 +11,14 @@ def build_seq_dataset(data: pd.DataFrame,
                       offset: int = 0,
                       param_index: tuple = (4, 19),
                       sym_n: int = 100,
+                      single_symbol: bool = False,
+                      symbol_name: str = None,
                       y_mode: YMode = YMode.DIF,
                       buy_limit_criteria: float = 1.03,
                       sell_limit_criteria: float = 0.97,
                       bin_criteria: float = 1,
-                      return_labels = False):
+                      return_labels: bool = False,
+                      ):
     """
     No support Many-To-Many model.
 
@@ -23,13 +26,18 @@ def build_seq_dataset(data: pd.DataFrame,
     """
     out_seq = [[], []]
 
+    print(data)
     if ignore_col is None:
         ignore_col = []
 
-    x_data = data.iloc[:, 0: param_index[1]].values
+    if single_symbol:
+        x_data = data.loc[data['symbol'] == symbol_name, :].iloc[:, 0: param_index[1]].values
+        sym_n = 1
+    else:
+        x_data = data.iloc[:, 0: param_index[1]].values
 
     x_index = [
-        [x for x in range(i, i + (x_size * sym_n), sym_n)] for i in range(len(data) - (x_size - 1) * sym_n)
+        [x for x in range(i, i + (x_size * sym_n), sym_n)] for i in range(len(x_data) - (x_size - 1) * sym_n)
     ]
 
     pl.log("build seq dataset size= " + str(len(data)))
@@ -49,8 +57,8 @@ def build_seq_dataset(data: pd.DataFrame,
         elif y_mode == YMode.SELL_LIMIT:
             return [1] if dif < sell_limit_criteria else [0]
 
-    shift_data = data["last_price"][(x_size*sym_n)+(offset*sym_n):].reset_index(drop=True)
-    last_x_data = data["last_price"][((x_size-1)*sym_n):].reset_index(drop=True)
+    shift_data = data.loc[data['symbol'] == symbol_name, :]["last_price"][(x_size*sym_n)+(offset*sym_n):].reset_index(drop=True)
+    last_x_data = data.loc[data['symbol'] == symbol_name, :]["last_price"][((x_size-1)*sym_n):].reset_index(drop=True)
 
     out_seq[1] = np.array(list(map(compare_price, shift_data, last_x_data)), dtype=np.float32)
 
@@ -64,23 +72,9 @@ def build_seq_dataset(data: pd.DataFrame,
     return out_seq
 
 
-def split_train_dataset(data: list, test_split: float = 0.2, random_sample: bool = False):
+def split_train_dataset(data: list, test_split: float = 0.2):
     dataset_size = len(data[0])
     pl.log("split_dataset")
-    pl.log("random sample= " + str(random_sample))
-
-    if random_sample:
-        sample = random.sample(range(0, dataset_size), int(dataset_size * test_split))
-
-        train_x = np.delete(data[0], sample, axis=0)
-        train_y = np.delete(data[1], sample, axis=0)
-
-        test_x = data[0][sample]
-        test_y = data[1][sample]
-
-        pl.log("split seq processed\n")
-
-        return train_x, train_y, test_x, test_y
 
     train_index = int(dataset_size*(1-test_split))
 
