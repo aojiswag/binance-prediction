@@ -136,8 +136,4 @@ class DiffDataSet:
         return [x for x, _ in self.__dict__.items()]
 
 
-class YMode:
-    DIF = "DIF"
-    BUY_LIMIT = "BUY_LIMIT"
-    SELL_LIMIT = "SELL_LIMIT"
-    BIN_LIMIT = "BIN_LIMIT"
+

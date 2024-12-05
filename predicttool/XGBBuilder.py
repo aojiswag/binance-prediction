@@ -2,16 +2,11 @@ from xgboost import XGBRegressor, XGBClassifier, plot_importance
 import xgboost as xgb
 import pandas as pd
 import numpy as np
-import cupy
 import time
 
-from predicttool.tools.predicthelper import build_seq_dataset
 from predicttool.tools.predicthelper import split_train_dataset
-from datacollection.logdataset import YMode
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_squared_error, accuracy_score, r2_score, f1_score
-
-from matplotlib import pyplot as plt
 
 
 class XGBBuilder:
@@ -20,7 +15,7 @@ class XGBBuilder:
                  columns: list,
                  classification: bool = False,
                  test_split: float = 0.2,
-                 random_sample: bool = False):
+                 ):
 
         self.columns = columns
         self.model = None

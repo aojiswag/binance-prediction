@@ -1,7 +1,7 @@
 from predicttool.LSTMBuilder import LSTMBuilder
 from predicttool.tools.predicthelper import build_seq_dataset
 import pandas as pd
-from datacollection.logdataset import YMode
+from predicttool.tools.predicthelper import YMode
 
 """
 No git change tracking

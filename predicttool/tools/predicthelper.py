@@ -1,8 +1,14 @@
 import numpy as np
 import pandas as pd
-from datacollection.logdataset import YMode
 import random
 import predicttool.tools.printlog as pl
+
+
+class YMode:
+    DIF = "DIF"
+    BUY_LIMIT = "BUY_LIMIT"
+    SELL_LIMIT = "SELL_LIMIT"
+    BIN_LIMIT = "BIN_LIMIT"
 
 
 def build_seq_dataset(data: pd.DataFrame,
@@ -89,11 +95,3 @@ def split_train_dataset(data: list, test_split: float = 0.2):
     return train_x, train_y, test_x, test_y
 
 
-"""original_data = pd.read_csv("originaldata/tradeLog241118140145.csv")
-
-dataset = build_seq_dataset(data=original_data, y_mode=YMode.DIF, ignore_col=[6, 7])
-a, b, c, d = split_train_dataset(data=dataset, random_sample=False)
-
-print(a[0][0])
-print(b[0][0])
-"""

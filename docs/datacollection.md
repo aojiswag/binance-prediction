@@ -78,4 +78,4 @@ ApiInfo 클래스의 **"key" 필드에는 Binance API의 "API key"** 를, **"sec
 |prev_day_ssd_avg_per|현재 Stochastic RSI slow d / 전일 전체 Stochastic RSI slow d 평균|
 
 
-이 데이터가 수집됐다면, [predicttool](docs/predicttool.md)을 통해 가격 변동 예측을 시도할 수 있습니다.
+데이터를 수집했다면, 이제 [predicttool](../docs/predicttool.md)을 통해 가격 변동 예측을 시도할 수 있습니다.

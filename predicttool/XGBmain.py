@@ -1,7 +1,7 @@
 from XGBBuilder import XGBBuilder
 from predicttool.tools.predicthelper import build_seq_dataset
 import pandas as pd
-from datacollection.logdataset import YMode
+from predicttool.tools.predicthelper import YMode
 
 filepath = "originaldata/tradeLog241121000802.csv"
 
@@ -17,8 +17,7 @@ dataset, labels = build_seq_dataset(
 model = XGBBuilder(dataset=dataset,
                    columns=labels,
                    classification=False,
-                   test_split=0.2,
-                   random_sample=False)
+                   test_split=0.2)
 
 model.model_build_train(num_boost_round=1000,
                         learning_rate=0.2,
