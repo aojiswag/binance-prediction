@@ -3,6 +3,16 @@ predicttool: 머신러닝 및 딥러닝 기반 암호화폐 데이터 예측 도
   
 # Quick start: LSTM
 
+### 목차
+
+- [1. Sequence Dataset 생성](#1-sequence-dataset-생성-toolspredicthelperbuild_seq_dataset)<br>
+- [2. LSTM 객체 생성](#2-lstm-객체-생성-lstmbuilder)<br>
+- [3. LSTM 모델 생성 및 컴파일](#3-lstm-모델-생성-및-컴파일-lstmbuildermodel_build_compile)<br>
+- [4. LSTM 모델 학습](#4-lstm-모델-학습-lstmbuilderfit)<br>
+- [5. LSTM 모델 평가](#5-lstm-모델-평가-lstmbuilderevaluate)<br>
+- [6. 구현 참고](#구현-참고)
+
+
 ## 1. Sequence Dataset 생성: *tools.predicthelper.build_seq_dataset()*
 
 ```
@@ -51,10 +61,9 @@ Sequence dataset *y*의 Shape는 **(데이터셋 길이, 1) 형태의 2차원 nu
 </details>
 <br/>
 
-<details>
-<summary>
-build_seq_dataset의 파라미터 및 세부사항:  
-</summary>
+
+### build_seq_dataset의 파라미터 및 세부사항:  
+
 
 |파라미터|설명|기본값|필수|
 |---|---|---|---|
@@ -68,7 +77,8 @@ build_seq_dataset의 파라미터 및 세부사항:
 |symbol_name|*single_symbol*이 True일 경우, 데이터셋을 구성할 특정 단일 심볼의 문자열입니다.|None|Y if single_symbol True, else N|
 |y_mode|*x* 데이터로 생성된 *y* 데이터의 형식입니다. 사용 가능한 *y_mode*는 아래와 같습니다.<br> 1. *YMode.DIF* : 현재 가격을 이전 가격으로 나눈 뒤 이 변화율(***이하 가격변화율***)을 *y* 데이터로 사용합니다.<br> 2. *YMode.BIN_LIMIT* : 가격변화율을 *bin_criteria* 기준 이진 분류 데이터로 변환합니다.|YMode.DIF|N
 |bin_criteria|*y_mode*가 *YMode.BIN_LIMIT* 으로 설정되었을 때, 가격변화율이 이 값 이상이면 Y = 1, 이 값 이하이면 Y = 0 입니다.|1|Y if y_mode YMode.BIN_LIMIT, else N 
-</details>
+
+<br><br><br>
 
 ## 2. LSTM 객체 생성: *LSTMBuilder*
 ```
@@ -78,10 +88,10 @@ model = LSTMBuilder(
     test_split=0.2,
 )
 ```
-<details>
-<summary>
-LSTMBuilder의 파라미터 및 세부사항:  
-</summary>
+
+<br><br>
+#### LSTMBuilder의 파라미터 및 세부사항:  
+
 
 |파라미터|설명|기본값|필수|
 |---|---|---|---|
@@ -90,7 +100,8 @@ LSTMBuilder의 파라미터 및 세부사항:
 |test_split|최종 모델 **평가** 시에 사용할 **Test** 데이터의 전체 데이터에서의 비율, 이는 학습 과정에서 **검증**에 사용되는 **Validation** 데이터와는 구분됩니다.|0.2|N|
 
 ![train-val-test](../docs/img/train-val-test.png)
-</details>
+
+<br><br><br>
 
 ## 3. LSTM 모델 생성 및 컴파일: *LSTMBuilder.model_build_compile()*
 ```
@@ -102,10 +113,10 @@ model.model_build_compile(
 )
 ```
 
-<details>
-<summary>
+<br><br>
+
 model_build_compile() 의 파라미터 및 세부사항:  
-</summary>
+
 
 |파라미터|설명|기본값|필수|
 |---|---|---|---|
@@ -114,14 +125,14 @@ model_build_compile() 의 파라미터 및 세부사항:
 |activation|은닉층과 출력층을 연결하는 *dense* 레이어의 활성화 함수| relu | N| 
 |lerning_rate|경사하강 알고리즘에서의 가중치, = 학습률 | 0.001|N
 
-<br/>
+<br>
 
 (lstm_unit=8, dense_unit=4), batch_size=3 파라미터로 구성된 뉴럴 네트워크 다이어그램:<br/>
 (여기에서 batch size 는 *x* 원본 데이터 Sample과 무관하며 학습 시 병렬 처리와 관련됩니다.)
 
 
 ![lstm-nn](../docs/img/lstm-nn.png)
-</details>
+<br><br><br>
 
 ## 4. LSTM 모델 학습: *LSTMBuilder.fit()*
 
@@ -135,10 +146,11 @@ model.fit(
     checkpoint=False
 )
 ```
-<details>
-<summary>
-fit() 의 파라미터 및 세부사항:  
-</summary>
+
+<br><br>
+
+#### fit() 의 파라미터 및 세부사항:  
+
 
 참고: [Keras Model Training API: fit()](https://keras.io/api/models/model_training_apis/#fit-method)
 
@@ -151,8 +163,7 @@ fit() 의 파라미터 및 세부사항:
 |early_stopping_patience|*early_stopping* 파라미터에서, 몇 번의 학습에 걸쳐서 더 이상 성능이 증가하지 않을 경우 학습을 종료할지 결정합니다. |3| Y if early_stopping True, else N|
 |checkpoint|각 *epoch* 마다 검증 데이터를 통해 모델의 성능을 평가하고, 성능이 이 학습에서 가장 높다면, 해당 모델을 *checkpoint/best_lstm_model{time}.keras* 파일로 저장합니다.|False|N
 
-<br/>
-</details>
+<br><br><br>
 
 
 ## 5. LSTM 모델 평가: LSTMBuilder.evaluate()
@@ -161,16 +172,14 @@ fit() 의 파라미터 및 세부사항:
 model.evaluate(plot_loss_history=True)
 ```
 
-<details>
-<summary>
-evaluate() 의 파라미터 및 세부사항:  
-</summary>
+<br><br>
+#### evaluate() 의 파라미터 및 세부사항:  
+
 
 |파라미터|설명|기본값|필수|
 |---|---|---|---|
-|plot_loss_history|학습 과정에서의 학습 데이터 손실률, 검증 데이터 손실률의 epoch 진행에 따른 변화를 그래프로 확인합니다.|True|N|
+|plot_loss_history|학습 과정에서의 학습 데이터 손실률, 검증 데이터 손실률의 *epoch* 진행에 따른 변화를 그래프로 확인합니다.|True|N|
 
-<br>
 
 ### 출력: 
 [predicttool/result](../predicttool/result/) 위치에 예측 및 평가 결과 csv 파일이 생성되며 여기에는 손실률, 평가 지표와 그 수치도 같이 포함됩니다.<br/> 실제 파일 예시는 다음과 같습니다:
@@ -181,5 +190,8 @@ evaluate() 의 파라미터 및 세부사항:
 |y3|y3|
 |...|...|
 
-<br/>
-</details>
+<br><br><br>
+
+## 구현 참고
+
+이 가이드 기반으로 구현된 Python 스크립트는 [predicttool/LSTMBuilder.py](../predicttool/LSTMmain.py) 에서 확인할 수 있습니다.
